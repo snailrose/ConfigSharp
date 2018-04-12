@@ -31,27 +31,49 @@ namespace ConsoleApp1
 {
     class Program
     {
-        static string def = "type xyx {\n"+
-                            " key1 = \"value1\";\n"+
-                            " key2 = \"value2\";\n" +
-                            " some_node_type pdq { \n" +
-                            "   some_other_attribute = \"value\";\n" +
-                            " }\n" +
-                            "}";
 
+
+        static string def = "" +
+        "/*\n" +
+        "Multi line comment\n" +
+        "*/\n" +
+        "type name\n" +
+        "{\n" +
+        "   key1  = \"value1\";\n" +
+        "   key2  = \"value2\";\n" +
+        "\n" +
+        "   // Single line comment\n" +
+        "    subtype name\n" +
+        "    {\n" +
+        "        key1 = \"123\";\n" +
+        "        key2 = \"5,7,8,9,1\";\n" +
+        "    }\n" +
+        "\n" +
+        "key_chunk =>>>\n" +
+        "  #include \"stdio.h\"\n" +
+        "\n" +
+        "  int main(int argc, char** argv)\n" +
+        "  {\n" +
+        "       printf(\"defines this large block of text to be stored in the key_chunk attribute\n\");\n" +
+        "       return 0;\n" +
+        "   }\n" +
+        "<<<=;\n" +
+        "}\n";
 
 
         static void Main(string[] args)
         {
 
+            Console.WriteLine("========================================");
             Console.WriteLine("Parsing config script ");
             Console.WriteLine("");
             Console.WriteLine(def);
+            Console.WriteLine("========================================");
 
             ConfigSharp.Parser p = new ConfigSharp.Parser();
             p.ParseString(def);
 
-            ConfigSharp.Node nd = p.Tree.FindNodeByName("xyx");
+            ConfigSharp.Node nd = p.Tree.FindNodeByName("name");
             if (nd != null)
             {
                 ConfigSharp.Attribute key1 = nd.FindAttribute("key1");
@@ -59,8 +81,12 @@ namespace ConsoleApp1
                     Console.WriteLine("Parsed key1 = " + key1.Value);
 
                 ConfigSharp.Attribute key2 = nd.FindAttribute("key2");
-                if (key1 != null)
+                if (key2 != null)
                     Console.WriteLine("Parsed key2 = " + key2.Value);
+
+                ConfigSharp.Attribute key_chunk = nd.FindAttribute("key_chunk");
+                if (key_chunk != null)
+                    Console.WriteLine("Parsed key_chunk = " + key_chunk.Value);
             }
         }
     }
