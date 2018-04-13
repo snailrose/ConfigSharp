@@ -15,7 +15,6 @@ type name {
       key1 = "123";
       key2 = "5,7,8,9,1";
     }
-  }
   
   key_chunk =>>>
       #include "stdio.h"
