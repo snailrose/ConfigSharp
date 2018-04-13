@@ -7,7 +7,7 @@ Flexible configuration parser
 Multi line comment
 */
 type name {
-    key1  = "value";
+    key1  = "value1";
     key2  = "value2";
     
     // Single line comment
