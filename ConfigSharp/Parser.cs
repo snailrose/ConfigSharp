@@ -28,10 +28,12 @@ using System.Collections.Generic;
 
 namespace ConfigSharp
 {
-    public class SyntaxError : Exception {
+    public class SyntaxError : Exception
+    {
         int m_line;
 
-        public SyntaxError(string message, int line) : base(message) {
+        public SyntaxError( string message, int line ) : base( message )
+        {
             m_line = line;
         }
 
@@ -45,12 +47,39 @@ namespace ConfigSharp
 
         public Parser()
         {
-            m_tree = new Tree();
+            m_tree = null;
         }
 
-        public void ParseString( string buffer )
+
+        static public Parser ParseByteArray( string bytes )
+        {
+            if( bytes == null || bytes.Length == 0 )
+                return null;
+
+            string[] array = bytes.Split( ',' );
+            string res = "";
+            foreach( string str in array ) {
+                if( Int32.TryParse( str, out int iv ) && ( iv >= 32 && iv <= ( 127 ) ) ) {
+                    char c = ( char )iv;
+                    res += c;
+                }
+            }
+            return ParseString( res );
+        }
+
+
+        public static Parser ParseString( string buffer )
+        {
+            var psr = new Parser();
+            psr.Parse( buffer );
+            return psr;
+        }
+
+
+        public void Parse( string buffer )
         {
             Lexer lex = new Lexer( buffer );
+            m_tree = new Tree();
 
             Node cur_node = null;
             Stack<Node> stack = new Stack<Node>();
@@ -59,10 +88,8 @@ namespace ConfigSharp
             Token tok = null;
             while( ( tok = lex.Lex() ) != null && tok.Type != Token.TokenType.EOF ) {
                 if( tok.Type == Token.TokenType.SyntaxError ) {
-                    throw new SyntaxError("syntax error," + tok.Value, lex.Line);
-                }
-                else if( tok.Type == Token.TokenType.CloseBracket)
-                {
+                    throw new SyntaxError( "syntax error," + tok.Value, lex.Line );
+                } else if( tok.Type == Token.TokenType.CloseBracket ) {
                     if( stack.Count > 0 ) {
                         Node top = stack.Pop();
                         if( stack.Count == 0 )
@@ -85,27 +112,25 @@ namespace ConfigSharp
                         b = tok;
                         if( b.Type != Token.TokenType.OpenBracket ) {
                             tok = lex.Lex();
-                            if (tok.Type == Token.TokenType.Terminator)
+                            if( tok.Type == Token.TokenType.Terminator )
                                 c = tok;
                         }
                         cur_node = new Node( a.Value,
                                              b.Type != Token.TokenType.OpenBracket ?
                                              b.Value : String.Format( "__unnamed{0}__", idx++ )
                                            );
-                        if( cur_node != null )
-                        {
-                            stack.Push(cur_node);
+                        if( cur_node != null ) {
+                            stack.Push( cur_node );
 
-                            if (stack.Count > 0 && c != null)
-                            {
+                            if( stack.Count > 0 && c != null ) {
                                 Node top = stack.Pop();
-                                if (stack.Count == 0)
-                                    m_tree.AddNode(top);
+                                if( stack.Count == 0 )
+                                    m_tree.AddNode( top );
                                 else
-                                    stack.Peek().AddChild(top);
+                                    stack.Peek().AddChild( top );
                             }
                         }
- 
+
 
                         continue;
                     } else if( tok != null && tok.Type == Token.TokenType.Equals ) {
@@ -113,22 +138,21 @@ namespace ConfigSharp
                         a = tok;
                         b = lex.Lex();
 
-                        if ( b.Type != Token.TokenType.String && b.Type != Token.TokenType.InlineExtra ) {
-                            throw new SyntaxError("syntax error, expecting string", lex.Line);
+                        if( b.Type != Token.TokenType.String && b.Type != Token.TokenType.InlineExtra ) {
+                            throw new SyntaxError( "syntax error, expecting string", lex.Line );
                         }
                         c = lex.Lex();
                         if( c.Type != Token.TokenType.Terminator ) {
-                            throw new SyntaxError("syntax error, expecting ';'", lex.Line);
+                            throw new SyntaxError( "syntax error, expecting ';'", lex.Line );
                         }
-                        
-                        if ( stack.Count == 0 )
-                            m_tree.AddAtribute( new Attribute( d.Value, b.Value ));
+
+                        if( stack.Count == 0 )
+                            m_tree.AddAtribute( new Attribute( d.Value, b.Value, b.Type ) );
                         else
-                            stack.Peek().AddAttribute( new Attribute( d.Value, b.Value ));
+                            stack.Peek().AddAttribute( new Attribute( d.Value, b.Value, b.Type ) );
                         continue;
-                    }
-                    else if (tok != null && tok.Type == Token.TokenType.EOF)
-                        throw new SyntaxError("syntax error, premature end of file", lex.Line);
+                    } else if( tok != null && tok.Type == Token.TokenType.EOF )
+                        throw new SyntaxError( "syntax error, premature end of file", lex.Line );
                 }
             }
         }

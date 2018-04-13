@@ -39,7 +39,6 @@ namespace ConfigSharp
         List<Attribute> m_attributes;
         Node m_parent;
 
-
         public Node( string type, string name )
         {
             m_name = name;

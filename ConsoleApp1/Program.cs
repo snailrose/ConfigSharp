@@ -71,7 +71,7 @@ namespace ConsoleApp1
             Console.WriteLine("========================================");
 
             ConfigSharp.Parser p = new ConfigSharp.Parser();
-            p.ParseString(def);
+            p.Parse(def);
 
             ConfigSharp.Node nd = p.Tree.FindNodeByName("name");
             if (nd != null)
@@ -88,6 +88,38 @@ namespace ConsoleApp1
                 if (key_chunk != null)
                     Console.WriteLine("Parsed key_chunk = " + key_chunk.Value);
             }
+
+            /*
+            string val = p.Tree.AsPrettyPrint();
+            Console.WriteLine("========================================");
+            Console.WriteLine("AsPrettyPrint ");
+            Console.WriteLine(val);
+
+            Console.WriteLine("========================================");
+            Console.WriteLine("Reparsing");
+            p.Parse(val);
+
+            Console.WriteLine("========================================");
+            Console.WriteLine("AsCompactPrint");
+            val = p.Tree.AsCompactPrint();
+            Console.WriteLine(val);
+
+            Console.WriteLine("========================================");
+            Console.WriteLine("Reparsing");
+            p.Parse(val);
+
+            Console.WriteLine("========================================");
+            Console.WriteLine("As compact byte array");
+            val = p.Tree.AsCompactByteArray();
+            Console.WriteLine(val);
+
+            var psr = ConfigSharp.Parser.ParseByteArray(val);
+            val = psr.Tree.AsCompactPrint();
+            Console.WriteLine("========================================");
+            Console.WriteLine("AsPrettyPrint ");
+            Console.WriteLine(val);
+
+            */
         }
     }
 }

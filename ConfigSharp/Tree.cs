@@ -31,12 +31,13 @@ namespace ConfigSharp
     {
         List<Node> m_nodes;
         List<Attribute> m_attributes;
+        private static int m_depth;
 
         public Tree()
         {
             m_nodes = new List<Node>();
             m_attributes = new List<Attribute>();
-
+            m_depth = 0;
         }
 
         public void AddNode( Node nd )
@@ -131,5 +132,131 @@ namespace ConfigSharp
 
         public List<Node> Nodes { get => m_nodes; }
         public List<Attribute> Attributes { get => m_attributes; }
+
+
+
+        private string WriteNewLine()
+        {
+            return "\n";
+        }
+
+        private string WriteSpace()
+        {
+            string str = "";
+            for (int i = 0; i < m_depth; ++i)
+                str += " ";
+            return str;
+        }
+
+
+        private string AsPrettyPrint(Node nd)
+        {
+            string result = "";
+            if (nd == null)
+                return result;
+
+            result += WriteSpace();
+            result += nd.Type + " " + nd.Name;
+            result += WriteNewLine();
+            result += WriteSpace() + "{";
+            result += WriteNewLine();
+            m_depth += 4;
+
+            foreach (Attribute attr in nd.Attributes)
+            {
+                if (attr.Type == Token.TokenType.InlineExtra)
+                {
+                    result += WriteSpace();
+                    result += attr.Key + "  =>>>";
+                    result += attr.Value;
+                    result += "<<<=;";
+                    result += WriteNewLine();
+                }
+                else
+                {
+                    result += WriteSpace();
+                    result += attr.Key + "  = \"" + attr.Value + "\";";
+                    result += WriteNewLine();
+                }
+            }
+
+
+            foreach (Node chnd in nd.Children)
+                result += AsPrettyPrint(chnd);
+
+            m_depth -= 4;
+            result += WriteSpace();
+            result += "}" + WriteNewLine();
+            return result;
+        }
+
+
+        public string AsPrettyPrint()
+        {
+            string result = "";
+            result += WriteSpace();
+            result += WriteNewLine();
+            foreach (Node nd in m_nodes)
+                result += AsPrettyPrint(nd);
+            return result;
+        }
+
+
+
+        private string AsCompactPrint(Node nd)
+        {
+            string result = "";
+            if (nd == null)
+                return result;
+
+            m_depth = 0;
+            result += nd.Type + " " + nd.Name + "{";
+            foreach (Attribute attr in nd.Attributes)
+            {
+                if (attr.Type == Token.TokenType.InlineExtra)
+                {
+                    result += attr.Key + "=>>>";
+                    result += attr.Value;
+                    result += "<<<=;";
+                }
+                else
+                    result += attr.Key + "=\"" + attr.Value + "\";";
+            }
+            foreach (Node chnd in nd.Children)
+                result += AsCompactPrint(chnd);
+            result += "}";
+            return result;
+        }
+
+        public string AsCompactPrint()
+        {
+            string result = "";
+            foreach (Node nd in m_nodes)
+                result += AsCompactPrint(nd);
+            return result;
+        }
+
+        public string AsCompactByteArray()
+        {
+            string result = "", val = AsCompactPrint();
+            if (val.Length > 0)
+            {
+                int i = 0;
+                foreach (char c in val)
+                {
+                    int ci = c;
+                    if (ci >= 32 && ci <= 127)
+                    {
+                        result += ci.ToString();
+                        if (i + 1 < val.Length)
+                            result += ",";
+                        ++i;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public override string ToString() { m_depth = 0; return AsPrettyPrint(); }
     }
 }

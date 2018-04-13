@@ -115,7 +115,6 @@ namespace ConfigSharp
                                     }
                                     else
                                         alpha += c;
-
                                 }
                             }
                             else

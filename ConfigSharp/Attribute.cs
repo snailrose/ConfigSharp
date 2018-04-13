@@ -25,17 +25,21 @@
 */
 
 
+using System;
+
 namespace ConfigSharp
 {
     public class Attribute
     {
         private string m_key;
         private string m_value;
+        private Token.TokenType m_type;
 
-        public Attribute(string key, string value)
+        public Attribute(string key, string value, Token.TokenType type)
         {
             m_key = key;
             m_value = value;
+            m_type = type;
         }
 
         public string Key { get => m_key; }
@@ -107,7 +111,30 @@ namespace ConfigSharp
         }
 
 
-        public float Float  { get => StringUtils.GetValueF(m_value); }
-        public int Int      { get => StringUtils.GetValueI(m_value); }
+        public float Float => GetValueF(m_value);
+        public int Int     => GetValueI(m_value);
+        public Token.TokenType Type => m_type;
+
+
+
+        internal static int GetValueI(String text, int def = 0)
+        {
+            if (Int32.TryParse(text, out int r))
+                return r;
+            return def;
+        }
+
+        internal static float GetValueF(String text, float def = 0)
+        {
+            return (float)GetValueD(text);
+        }
+
+
+        internal static double GetValueD(String text, double def = 0)
+        {
+            if (Double.TryParse(text, out double r))
+                return r;
+            return def;
+        }
     }
 }
