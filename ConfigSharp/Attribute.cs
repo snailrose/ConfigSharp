@@ -110,6 +110,40 @@ namespace ConfigSharp
         public int Int     => GetValueI( m_value );
         public Token.TokenType Type => m_type;
 
+        public float[] Rect
+        {
+            get
+            {
+                float[] rect = new float[4] { 0, 0, 0, 0 };
+
+                string[] arr = m_value.Split(',');
+                if (arr.Length == 4)
+                {
+                    rect[0] = GetValueF(arr[0]);
+                    rect[1] = GetValueF(arr[1]);
+                    rect[2] = GetValueF(arr[2]);
+                    rect[3] = GetValueF(arr[3]);
+                }
+                return rect;
+            }
+        }
+
+
+        public float[] Vec2
+        {
+            get
+            {
+                float[] v = new float[2] { 0, 0 };
+
+                string[] arr = m_value.Split(',');
+                if (arr.Length == 2)
+                {
+                    v[0] = GetValueF(arr[0]);
+                    v[1] = GetValueF(arr[1]);
+                }
+                return v;
+            }
+        }
 
 
         internal static int GetValueI( String text, int def = 0 )
