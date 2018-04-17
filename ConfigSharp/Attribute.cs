@@ -35,7 +35,7 @@ namespace ConfigSharp
         private string m_value;
         private Token.TokenType m_type;
 
-        public Attribute(string key, string value, Token.TokenType type)
+        public Attribute( string key, string value, Token.TokenType type )
         {
             m_key = key;
             m_value = value;
@@ -45,36 +45,33 @@ namespace ConfigSharp
         public string Key { get => m_key; }
         public string Value { get => m_value; }
 
-        public string[] Array
-        {
+        public string[] Array {
             get {
-                string[] arr  = m_value.Split(',');
-                if (arr != null && arr.Length > 0)
+                string[] arr  = m_value.Split( ',' );
+                if( arr != null && arr.Length > 0 )
                     return arr;
                 return null;
             }
         }
 
-        public string SwizzleL
-        {
+        public string SwizzleL {
             get {
-                if (IsSwizzle())
+                if( IsSwizzle() )
                 {
-                    string[] swiz = m_value.Split('.');
-                    if (swiz != null && swiz.Length > 0)
+                    string[] swiz = m_value.Split( '.' );
+                    if( swiz != null && swiz.Length > 0 )
                         return swiz[0];
                 }
                 return "";
             }
         }
-        public string SwizzleR
-        {
+        public string SwizzleR {
             get
             {
-                if (IsSwizzle())
+                if( IsSwizzle() )
                 {
-                    string[] swiz = m_value.Split('.');
-                    if (swiz != null && swiz.Length > 1)
+                    string[] swiz = m_value.Split( '.' );
+                    if( swiz != null && swiz.Length > 1 )
                         return swiz[1];
                 }
                 return "";
@@ -83,18 +80,17 @@ namespace ConfigSharp
 
         public bool IsArray()
         {
-            if (m_value != null)
-                return m_value.Contains(",");
+            if( m_value != null )
+                return m_value.Contains( "," );
             return false;
         }
 
 
         public bool IsSwizzle()
         {
-            if (m_value != null)
-            {
-                if (Lexer.IsAlpha(m_value[0]))
-                    return m_value.Contains(".");
+            if( m_value != null ) {
+                if( Lexer.IsAlpha( m_value[0] ) )
+                    return m_value.Contains( "." );
             }
             return false;
         }
@@ -102,37 +98,36 @@ namespace ConfigSharp
 
         public bool IsIdentifier()
         {
-            if (m_value != null)
-            {
-                if (Lexer.IsAlpha(m_value[0]))
+            if( m_value != null ) {
+                if( Lexer.IsAlpha( m_value[0] ) )
                     return true;
             }
             return false;
         }
 
 
-        public float Float => GetValueF(m_value);
-        public int Int     => GetValueI(m_value);
+        public float Float => GetValueF( m_value );
+        public int Int     => GetValueI( m_value );
         public Token.TokenType Type => m_type;
 
 
 
-        internal static int GetValueI(String text, int def = 0)
+        internal static int GetValueI( String text, int def = 0 )
         {
-            if (Int32.TryParse(text, out int r))
+            if( Int32.TryParse( text, out int r ) )
                 return r;
             return def;
         }
 
-        internal static float GetValueF(String text, float def = 0)
+        internal static float GetValueF( String text, float def = 0 )
         {
-            return (float)GetValueD(text);
+            return ( float )GetValueD( text );
         }
 
 
-        internal static double GetValueD(String text, double def = 0)
+        internal static double GetValueD( String text, double def = 0 )
         {
-            if (Double.TryParse(text, out double r))
+            if( Double.TryParse( text, out double r ) )
                 return r;
             return def;
         }

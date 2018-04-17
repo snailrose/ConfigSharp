@@ -1,1 +1,4 @@
 /.vs/ConfigSHarp/v15/.suo
+bin
+obj
+sqlite3

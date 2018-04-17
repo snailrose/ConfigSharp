@@ -54,10 +54,9 @@ namespace ConfigSharp
                         while( c != '\n' && c != '\r' && !EOF() )
                             c = m_buffer[++m_cur];
                     } else if( c == '*' ) {
-                        while( c != '/' && m_cur < m_len )
-                        {
+                        while( c != '/' && m_cur < m_len ) {
                             c = m_buffer[++m_cur];
-                            if (c == '\n' || c == '\r')
+                            if( c == '\n' || c == '\r' )
                                 m_line++;
                         }
                     }
@@ -81,7 +80,7 @@ namespace ConfigSharp
                     return new Token( Token.TokenType.String, value );
                 } else if( c == '\n' || c == '\r' ) {
                     ++m_cur;
-                    if (c == '\n')
+                    if( c == '\n' )
                         m_line++;
                     continue;
                 } else if( c == '{' ) {
@@ -90,45 +89,35 @@ namespace ConfigSharp
                 } else if( c == '}' ) {
                     ++m_cur;
                     return new Token( Token.TokenType.CloseBracket, "}" );
-                }
-                else if (c == '>')
-                {
+                } else if( c == '>' ) {
                     int cnt = 1;
-                    while ((c = m_buffer[++m_cur]) == '>' && !EOF())
+                    while( ( c = m_buffer[++m_cur] ) == '>' && !EOF() )
                         ++cnt;
 
-                    if (cnt == 3)
-                    {
+                    if( cnt == 3 ) {
                         string alpha = "";
-                        while (!EOF())
-                        {
+                        while( !EOF() ) {
                             c = m_buffer[m_cur];
 
-                            if (c == '<')
-                            {
-                                if ((m_cur + 4) < m_len)
-                                {
-                                    if (m_buffer.Substring(m_cur, 4) == "<<<=")
-                                    {
+                            if( c == '<' ) {
+                                if( ( m_cur + 4 ) < m_len ) {
+                                    if( m_buffer.Substring( m_cur, 4 ) == "<<<=" ) {
                                         m_cur += 4;
-                                        return new Token(Token.TokenType.InlineExtra, alpha);
-                                    }
-                                    else
+                                        return new Token( Token.TokenType.InlineExtra, alpha );
+                                    } else
                                         alpha += c;
                                 }
-                            }
-                            else
+                            } else
                                 alpha += c;
                             ++m_cur;
                         }
                     }
-                }
-                else if( IsAlpha( c ) ) {
+                } else if( IsAlpha( c ) ) {
                     string alpha = "";
                     alpha += c;
-                    while( ValidIdentifier(c) && !EOF() ) {
+                    while( ValidIdentifier( c ) && !EOF() ) {
                         c = m_buffer[++m_cur];
-                        if( ValidIdentifier(c) )
+                        if( ValidIdentifier( c ) )
                             alpha += c;
                     }
                     return new Token( Token.TokenType.TokenIdentifier, alpha );
@@ -138,9 +127,9 @@ namespace ConfigSharp
             return new Token( Token.TokenType.EOF, "EOF" );
         }
 
-        private bool ValidIdentifier(char c)
+        private bool ValidIdentifier( char c )
         {
-            return (IsAlpha(c) || IsNumeric(c) || c == '_' || c == '.');
+            return ( IsAlpha( c ) || IsNumeric( c ) || c == '_' || c == '.' );
         }
 
         public static bool IsAlpha( char c )

@@ -90,11 +90,10 @@ namespace ConfigSharp
             return null;
         }
 
-        public Attribute this[int key]
-        {
+        public Attribute this[int key] {
             get
             {
-                if (key >= 0 && key < m_attributes.Count)
+                if( key >= 0 && key < m_attributes.Count )
                     return m_attributes[key];
                 return null;
             }
