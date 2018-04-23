@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Charles Carley</Copyright>
     <PackageProjectUrl>https://github.com/snailrose/ConfigSharp</PackageProjectUrl>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
@@ -13,6 +13,10 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Configuration,XML,JSON</PackageTags>
     <PackageId>ConfigSharpParser</PackageId>
+    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
+    <AssemblyName>ConfigSharpParser</AssemblyName>
   </PropertyGroup>
 
 </Project>
