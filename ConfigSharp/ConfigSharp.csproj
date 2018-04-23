@@ -13,6 +13,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Configuration,XML,JSON</PackageTags>
     <PackageId>ConfigSharpParser</PackageId>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
 </Project>
