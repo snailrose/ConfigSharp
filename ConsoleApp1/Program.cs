@@ -48,6 +48,10 @@ namespace ConsoleApp1
         "        key1 = \"123\";\n" +
         "        key2 = \"5,7,8,9,1\";\n" +
         "    }\n" +
+        "    subtype\n" +
+        "    [\n" +
+        "     1,3,5,7,9\n" +
+        "    ]\n" +
         "\n" +
         "key_chunk =>>>\n" +
         "  #include \"stdio.h\"\n" +
@@ -89,7 +93,6 @@ namespace ConsoleApp1
                     Console.WriteLine("Parsed key_chunk = " + key_chunk.Value);
             }
 
-            /*
             string val = p.Tree.AsPrettyPrint();
             Console.WriteLine("========================================");
             Console.WriteLine("AsPrettyPrint ");
@@ -114,12 +117,10 @@ namespace ConsoleApp1
             Console.WriteLine(val);
 
             var psr = ConfigSharp.Parser.ParseByteArray(val);
-            val = psr.Tree.AsCompactPrint();
+            val = psr.Tree.AsPrettyPrint();
             Console.WriteLine("========================================");
             Console.WriteLine("AsPrettyPrint ");
             Console.WriteLine(val);
-
-            */
         }
     }
 }

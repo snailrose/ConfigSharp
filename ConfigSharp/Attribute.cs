@@ -35,7 +35,7 @@ namespace ConfigSharp
         private string m_value;
         private Token.TokenType m_type;
 
-        public Attribute( string key, string value, Token.TokenType type )
+        public Attribute( string key, string value, Token.TokenType type = Token.TokenType.String )
         {
             m_key = key;
             m_value = value;

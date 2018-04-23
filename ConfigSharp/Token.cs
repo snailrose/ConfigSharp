@@ -37,6 +37,7 @@ namespace ConfigSharp
             CloseBracket,
             SyntaxError,
             InlineExtra,
+            Array,
             EOF
         }
 

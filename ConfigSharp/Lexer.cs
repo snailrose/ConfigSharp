@@ -61,8 +61,8 @@ namespace ConfigSharp
                         }
                     }
                     continue;
-                } else if( c == ' ' || c == '\t' ) {
-                    while( m_buffer[++m_cur] == ' ' && !EOF() ) ;
+                } else if( IsWS(c) ) {
+                    while(IsWS(m_buffer[++m_cur])&& !EOF() ) ;
                     continue;
                 } else if( c == '=' ) {
                     ++m_cur;
@@ -86,7 +86,26 @@ namespace ConfigSharp
                 } else if( c == '{' ) {
                     ++m_cur;
                     return new Token( Token.TokenType.OpenBracket, "{" );
-                } else if( c == '}' ) {
+                }
+                else if (c == '[') {
+                    c = m_buffer[++m_cur];
+
+                    string buf = ""; 
+                    while (!EOF() && c != ']')
+                    {
+                        if (!IsWS(c) && !IsNewLine(c))
+                            buf += c;
+                        c = m_buffer[++m_cur];
+                    }
+
+                    // move past ']'
+                    ++m_cur;
+
+                    if (EOF())
+                        return new Token(Token.TokenType.EOF, "end of file found while scanning array.");
+                    return new Token(Token.TokenType.Array, buf);
+                }
+                else if( c == '}' ) {
                     ++m_cur;
                     return new Token( Token.TokenType.CloseBracket, "}" );
                 } else if( c == '>' ) {
@@ -140,6 +159,15 @@ namespace ConfigSharp
         public static bool IsNumeric( char c )
         {
             return ( c >= '1' && c <= '9' ) || c == '0';
+        }
+
+        public static bool IsWS(char c)
+        {
+            return (c == ' ' || c == '\t');
+        }
+        public static bool IsNewLine(char c)
+        {
+            return (c == '\r' || c == '\n');
         }
 
         bool EOF() { return m_cur >= m_len; }

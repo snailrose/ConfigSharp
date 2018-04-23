@@ -31,7 +31,7 @@ namespace ConfigSharp
     {
         List<Node> m_nodes;
         List<Attribute> m_attributes;
-        private static int m_depth;
+        private int m_depth;
 
         public Tree()
         {
@@ -172,6 +172,32 @@ namespace ConfigSharp
                     result += "<<<=;";
                     result += WriteNewLine();
                 }
+                else if (attr.Type == Token.TokenType.Array)
+                {
+                    result += WriteSpace();
+                    result += attr.Key + " [";
+                    result += WriteNewLine();
+                    m_depth += 4;
+
+                    string[] arr = attr.Array;
+                    bool first = true;
+
+                    foreach (string s in arr)
+                    {
+                        if (!first) {
+                            result += ',';
+                            result += WriteNewLine();
+                        }
+                        result += WriteSpace();
+                        result += s;
+                        first = false;
+                    }
+                    result += WriteNewLine();
+                    m_depth -= 4;
+                    result += WriteSpace();
+                    result += "]";
+                    result += WriteNewLine();
+                }
                 else
                 {
                     result += WriteSpace();
@@ -179,8 +205,6 @@ namespace ConfigSharp
                     result += WriteNewLine();
                 }
             }
-
-
             foreach (Node chnd in nd.Children)
                 result += AsPrettyPrint(chnd);
 
@@ -196,6 +220,8 @@ namespace ConfigSharp
             string result = "";
             result += WriteSpace();
             result += WriteNewLine();
+            m_depth = 0;
+
             foreach (Node nd in m_nodes)
                 result += AsPrettyPrint(nd);
             return result;
@@ -209,7 +235,6 @@ namespace ConfigSharp
             if (nd == null)
                 return result;
 
-            m_depth = 0;
             result += nd.Type + " " + nd.Name + "{";
             foreach (Attribute attr in nd.Attributes)
             {
@@ -218,6 +243,20 @@ namespace ConfigSharp
                     result += attr.Key + "=>>>";
                     result += attr.Value;
                     result += "<<<=;";
+                }
+                else if (attr.Type == Token.TokenType.Array)
+                {
+                    result += attr.Key + "[";
+                    string[] arr = attr.Array;
+                    bool first = true;
+                    foreach (string s in arr)
+                    {
+                        if (!first)
+                            result += ',';
+                        result += s;
+                        first = false;
+                    }
+                    result += "]";
                 }
                 else
                     result += attr.Key + "=\"" + attr.Value + "\";";
@@ -231,6 +270,8 @@ namespace ConfigSharp
         public string AsCompactPrint()
         {
             string result = "";
+            m_depth = 0;
+
             foreach (Node nd in m_nodes)
                 result += AsCompactPrint(nd);
             return result;
@@ -241,11 +282,15 @@ namespace ConfigSharp
             string result = "", val = AsCompactPrint();
             if (val.Length > 0)
             {
+                int nl = (int)'\n';
+                int cr = (int)'\r';
+
+
                 int i = 0;
                 foreach (char c in val)
                 {
                     int ci = c;
-                    if (ci >= 32 && ci <= 127)
+                    if ((ci >= 32 && ci <= 127)|| ci == nl || ci == cr )
                     {
                         result += ci.ToString();
                         if (i + 1 < val.Length)
@@ -257,6 +302,6 @@ namespace ConfigSharp
             return result;
         }
 
-        public override string ToString() { m_depth = 0; return AsPrettyPrint(); }
+        public override string ToString() { return AsPrettyPrint(); }
     }
 }

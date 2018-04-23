@@ -59,7 +59,9 @@ namespace ConfigSharp
             string[] array = bytes.Split( ',' );
             string res = "";
             foreach( string str in array ) {
-                if( Int32.TryParse( str, out int iv ) && ( iv >= 32 && iv <= ( 127 ) ) ) {
+                int nl = (int)'\n';
+                int cr = (int)'\r';
+                if ( Int32.TryParse( str, out int iv ) && ( iv >= 32 && iv <= ( 127 )  ||  iv == nl || iv == cr ) ) {
                     char c = ( char )iv;
                     res += c;
                 }
@@ -102,38 +104,54 @@ namespace ConfigSharp
                     // rule TokenIdentifier {
                     // rule TokenIdentifier TokenIdentifier {
                     // rule TokenIdentifier TokenIdentifier;
+                    // rule TokenIdentifier TokenArray;
+                    // rule TokenIdentifier TokenIdentifier TokenArray;
 
                     Token d, a, b, c = null;
                     a = tok;
                     tok = lex.Lex();
-                    if( tok != null &&
+                    if (tok != null &&
                         tok.Type == Token.TokenType.TokenIdentifier ||
-                        tok.Type == Token.TokenType.OpenBracket ) {
+                        tok.Type == Token.TokenType.OpenBracket)
+                    {
                         b = tok;
-                        if( b.Type != Token.TokenType.OpenBracket ) {
+                        if (b.Type != Token.TokenType.OpenBracket)
+                        {
                             tok = lex.Lex();
-                            if( tok.Type == Token.TokenType.Terminator )
+                            if (tok.Type == Token.TokenType.Terminator)
                                 c = tok;
                         }
-                        cur_node = new Node( a.Value,
+                        cur_node = new Node(a.Value,
                                              b.Type != Token.TokenType.OpenBracket ?
-                                             b.Value : String.Format( "__unnamed{0}__", idx++ )
+                                             b.Value : String.Format("__unnamed{0}__", idx++)
                                            );
-                        if( cur_node != null ) {
-                            stack.Push( cur_node );
+                        if (cur_node != null)
+                        {
+                            stack.Push(cur_node);
 
-                            if( stack.Count > 0 && c != null ) {
+                            if (stack.Count > 0 && c != null)
+                            {
                                 Node top = stack.Pop();
-                                if( stack.Count == 0 )
-                                    m_tree.AddNode( top );
+                                if (stack.Count == 0)
+                                    m_tree.AddNode(top);
                                 else
-                                    stack.Peek().AddChild( top );
+                                    stack.Peek().AddChild(top);
                             }
                         }
-
-
                         continue;
-                    } else if( tok != null && tok.Type == Token.TokenType.Equals ) {
+                    }
+                    else if (tok != null && tok.Type == Token.TokenType.Array)
+                    {
+                        if (a.Type == Token.TokenType.TokenIdentifier)
+                        {
+                            if (stack.Count == 0)
+                                m_tree.AddAtribute(new Attribute(a.Value, tok.Value, tok.Type));
+                            else
+                                stack.Peek().AddAttribute(new Attribute(a.Value, tok.Value, tok.Type));
+                            continue;
+                        }
+
+                    }else if( tok != null && tok.Type == Token.TokenType.Equals ) {
                         d = a;
                         a = tok;
                         b = lex.Lex();
