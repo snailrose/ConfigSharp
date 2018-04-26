@@ -15,8 +15,15 @@ type name {
       key1 = "123";
       key2 = "5,7,8,9,1";
     }
-  
-  key_chunk =>>>
+
+    // comma seperated list 
+    somearray [
+        a, b, c, d, e, f, g,
+        1, 2, 3, 4, 5, 6, 7,
+        "A", "B", "C", "D", "E"
+    ]
+    
+    key_chunk =>>>
       #include "stdio.h"
       
       int main (int argc, char **argv)  
