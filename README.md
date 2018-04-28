@@ -28,7 +28,7 @@ type name {
       
       int main (int argc, char **argv)  
       {
-          printf("defines this large block of text to be stored in the key_chunk attribute\n");
+          printf("Hello World\n");
           return 0;
       }
     <<<=;
@@ -37,9 +37,10 @@ type name {
 </pre>
 
 type, name, key1, key2, and key_chunk may be any alpha numeric identifier as long as the first character is a letter.
-All attribute values need to defined within quotation marks, and terminated with the semicolon  `;` character. 
-It’s up to you to convert the string for your needs.
 <br/>
-The assignment `=>>>` allows you to put everything in the attribute up to the terminating `<<<=;` tag.
-
+All attribute values need to defined within quotation marks, and terminated with the semicolon `;` character. 
+<br/>
+It’s up to you to convert anything in the string to suit your needs.
+<br/>
+The assignment `=>>>` allows you to put everything in the attribute's value up to the terminating `<<<=;` tag.
 
