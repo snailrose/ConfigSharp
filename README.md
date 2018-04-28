@@ -36,11 +36,16 @@ type name {
 }
 </pre>
 
-type, name, key1, key2, and key_chunk may be any alpha numeric identifier as long as the first character is a letter.
-<br/>
-All attribute values need to defined within quotation marks, and terminated with the semicolon `;` character. 
-<br/>
-It’s up to you to convert anything in the string to suit your needs.
-<br/>
-The assignment `=>>>` allows you to put everything in the attribute's value up to the terminating `<<<=;` tag.
+Nodes are defined as follows
+<pre>
 
+node          ::=  node_decl
+node_decl     ::=  identifier  identifier  '{' decl '}'
+                    | identifier '{' decl '}'
+                    | identifier identifier ';'
+                    | decl
+decl          ::=    identifier '=' '"' [any - \n] '"' ';'
+                    | identifier '=>>>' [any] '<<<='; 
+                    | node_decl
+                    
+</pre>
