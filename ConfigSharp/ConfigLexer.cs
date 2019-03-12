@@ -3,17 +3,15 @@
     This file is part of ConfigSharp.
 
     Copyright (c) Charles Carley.
-
+    
     Contributor(s): none yet.
 -------------------------------------------------------------------------------
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
   arising from the use of this software.
-
   Permission is granted to anyone to use this software for any purpose,
   including commercial applications, and to alter it and redistribute it
   freely, subject to the following restrictions:
-
   1. The origin of this software must not be misrepresented; you must not
      claim that you wrote the original software. If you use this software
      in a product, an acknowledgment in the product documentation would be
@@ -31,14 +29,12 @@ namespace ConfigSharp
         private string m_buffer;
         private int m_cur;
         private int m_len;
-        private int m_line;
 
-        public int Line => m_line;
-
+        public int Line { get; private set; }
 
         public Lexer( string str )
         {
-            m_line = 0;
+            Line = 0;
             m_cur = 0;
             m_len = str.Length;
             m_buffer = str;
@@ -57,12 +53,12 @@ namespace ConfigSharp
                         while( c != '/' && m_cur < m_len ) {
                             c = m_buffer[++m_cur];
                             if( c == '\n' || c == '\r' )
-                                m_line++;
+                                Line++;
                         }
                     }
                     continue;
-                } else if( IsWS(c) ) {
-                    while(IsWS(m_buffer[++m_cur])&& !EOF() ) ;
+                } else if( IsWS( c ) ) {
+                    while( IsWS( m_buffer[++m_cur] ) && !EOF() ) ;
                     continue;
                 } else if( c == '=' ) {
                     ++m_cur;
@@ -81,19 +77,17 @@ namespace ConfigSharp
                 } else if( c == '\n' || c == '\r' ) {
                     ++m_cur;
                     if( c == '\n' )
-                        m_line++;
+                        Line++;
                     continue;
                 } else if( c == '{' ) {
                     ++m_cur;
                     return new Token( Token.TokenType.OpenBracket, "{" );
-                }
-                else if (c == '[') {
+                } else if( c == '[' ) {
                     c = m_buffer[++m_cur];
 
-                    string buf = ""; 
-                    while (!EOF() && c != ']')
-                    {
-                        if (!IsWS(c) && !IsNewLine(c))
+                    string buf = "";
+                    while( !EOF() && c != ']' ) {
+                        if( !IsWS( c ) && !IsNewLine( c ) )
                             buf += c;
                         c = m_buffer[++m_cur];
                     }
@@ -101,23 +95,20 @@ namespace ConfigSharp
                     // move past ']'
                     ++m_cur;
 
-                    if (EOF())
-                        return new Token(Token.TokenType.EOF, "end of file found while scanning array.");
-                    return new Token(Token.TokenType.Array, buf);
-                }
-                else if( c == '}' ) {
+                    if( EOF() )
+                        return new Token( Token.TokenType.EOF, "end of file found while scanning array." );
+                    return new Token( Token.TokenType.Array, buf );
+                } else if( c == '}' ) {
                     ++m_cur;
                     return new Token( Token.TokenType.CloseBracket, "}" );
                 } else if( c == '>' ) {
                     int cnt = 1;
                     while( ( c = m_buffer[++m_cur] ) == '>' && !EOF() )
                         ++cnt;
-
                     if( cnt == 3 ) {
                         string alpha = "";
                         while( !EOF() ) {
                             c = m_buffer[m_cur];
-
                             if( c == '<' ) {
                                 if( ( m_cur + 4 ) < m_len ) {
                                     if( m_buffer.Substring( m_cur, 4 ) == "<<<=" ) {
@@ -161,13 +152,13 @@ namespace ConfigSharp
             return ( c >= '1' && c <= '9' ) || c == '0';
         }
 
-        public static bool IsWS(char c)
+        public static bool IsWS( char c )
         {
-            return (c == ' ' || c == '\t');
+            return ( c == ' ' || c == '\t' );
         }
-        public static bool IsNewLine(char c)
+        public static bool IsNewLine( char c )
         {
-            return (c == '\r' || c == '\n');
+            return ( c == '\r' || c == '\n' );
         }
 
         bool EOF() { return m_cur >= m_len; }

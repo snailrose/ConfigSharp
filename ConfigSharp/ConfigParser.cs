@@ -3,17 +3,15 @@
     This file is part of ConfigSharp.
 
     Copyright (c) Charles Carley.
-
+    
     Contributor(s): none yet.
 -------------------------------------------------------------------------------
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
   arising from the use of this software.
-
   Permission is granted to anyone to use this software for any purpose,
   including commercial applications, and to alter it and redistribute it
   freely, subject to the following restrictions:
-
   1. The origin of this software must not be misrepresented; you must not
      claim that you wrote the original software. If you use this software
      in a product, an acknowledgment in the product documentation would be
@@ -23,6 +21,7 @@
   3. This notice may not be removed or altered from any source distribution.
 -------------------------------------------------------------------------------
 */
+
 using System;
 using System.Collections.Generic;
 
@@ -30,26 +29,17 @@ namespace ConfigSharp
 {
     public class SyntaxError : Exception
     {
-        int m_line;
-
-        public SyntaxError( string message, int line ) : base( message )
-        {
-            m_line = line;
-        }
-
-        public int Line  => m_line;
+        public SyntaxError( string message, int line ) : base( message ) => Line = line;
+        public int Line { get; private set; }
     }
 
 
     public class Parser
     {
-        Tree m_tree;
-
         public Parser()
         {
-            m_tree = null;
+            Tree = null;
         }
-
 
         static public Parser ParseByteArray( string bytes )
         {
@@ -59,9 +49,10 @@ namespace ConfigSharp
             string[] array = bytes.Split( ',' );
             string res = "";
             foreach( string str in array ) {
-                int nl = (int)'\n';
-                int cr = (int)'\r';
-                if ( Int32.TryParse( str, out int iv ) && ( iv >= 32 && iv <= ( 127 )  ||  iv == nl || iv == cr ) ) {
+                int nl = '\n';
+                int cr = '\r';
+                if( Int32.TryParse( str, out int iv ) && 
+                    ( iv >= 32 && iv <= ( 127 )  ||  iv == nl || iv == cr ) ) {
                     char c = ( char )iv;
                     res += c;
                 }
@@ -81,7 +72,7 @@ namespace ConfigSharp
         public void Parse( string buffer )
         {
             Lexer lex = new Lexer( buffer );
-            m_tree = new Tree();
+            Tree = new Tree();
 
             Node cur_node = null;
             Stack<Node> stack = new Stack<Node>();
@@ -95,7 +86,7 @@ namespace ConfigSharp
                     if( stack.Count > 0 ) {
                         Node top = stack.Pop();
                         if( stack.Count == 0 )
-                            m_tree.AddNode( top );
+                            Tree.AddNode( top );
                         else
                             stack.Peek().AddChild( top );
                     }
@@ -110,48 +101,41 @@ namespace ConfigSharp
                     Token d, a, b, c = null;
                     a = tok;
                     tok = lex.Lex();
-                    if (tok != null &&
+                    if( tok != null &&
                         tok.Type == Token.TokenType.TokenIdentifier ||
-                        tok.Type == Token.TokenType.OpenBracket)
-                    {
+                        tok.Type == Token.TokenType.OpenBracket ) {
                         b = tok;
-                        if (b.Type != Token.TokenType.OpenBracket)
-                        {
+                        if( b.Type != Token.TokenType.OpenBracket ) {
                             tok = lex.Lex();
-                            if (tok.Type == Token.TokenType.Terminator)
+                            if( tok.Type == Token.TokenType.Terminator )
                                 c = tok;
                         }
-                        cur_node = new Node(a.Value,
-                                             b.Type != Token.TokenType.OpenBracket ?
-                                             b.Value : String.Format("__unnamed{0}__", idx++)
-                                           );
-                        if (cur_node != null)
-                        {
-                            stack.Push(cur_node);
 
-                            if (stack.Count > 0 && c != null)
-                            {
+                        cur_node = new Node( a.Value,
+                                             b.Type != Token.TokenType.OpenBracket ?
+                                             b.Value : String.Format( "__unnamed{0}__", idx++ )
+                                           );
+                        if( cur_node != null ) {
+                            stack.Push( cur_node );
+
+                            if( stack.Count > 0 && c != null ) {
                                 Node top = stack.Pop();
-                                if (stack.Count == 0)
-                                    m_tree.AddNode(top);
+                                if( stack.Count == 0 )
+                                    Tree.AddNode( top );
                                 else
-                                    stack.Peek().AddChild(top);
+                                    stack.Peek().AddChild( top );
                             }
                         }
                         continue;
-                    }
-                    else if (tok != null && tok.Type == Token.TokenType.Array)
-                    {
-                        if (a.Type == Token.TokenType.TokenIdentifier)
-                        {
-                            if (stack.Count == 0)
-                                m_tree.AddAtribute(new Attribute(a.Value, tok.Value, tok.Type));
+                    } else if( tok != null && tok.Type == Token.TokenType.Array ) {
+                        if( a.Type == Token.TokenType.TokenIdentifier ) {
+                            if( stack.Count == 0 )
+                                Tree.AddAtribute( new Attribute( a.Value, tok.Value, tok.Type ) );
                             else
-                                stack.Peek().AddAttribute(new Attribute(a.Value, tok.Value, tok.Type));
+                                stack.Peek().AddAttribute( new Attribute( a.Value, tok.Value, tok.Type ) );
                             continue;
                         }
-
-                    }else if( tok != null && tok.Type == Token.TokenType.Equals ) {
+                    } else if( tok != null && tok.Type == Token.TokenType.Equals ) {
                         d = a;
                         a = tok;
                         b = lex.Lex();
@@ -165,7 +149,7 @@ namespace ConfigSharp
                         }
 
                         if( stack.Count == 0 )
-                            m_tree.AddAtribute( new Attribute( d.Value, b.Value, b.Type ) );
+                            Tree.AddAtribute( new Attribute( d.Value, b.Value, b.Type ) );
                         else
                             stack.Peek().AddAttribute( new Attribute( d.Value, b.Value, b.Type ) );
                         continue;
@@ -174,6 +158,6 @@ namespace ConfigSharp
                 }
             }
         }
-        public Tree Tree { get => m_tree; }
+        public Tree Tree { get; private set; }
     }
 }
