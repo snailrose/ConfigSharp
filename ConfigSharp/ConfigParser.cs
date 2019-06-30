@@ -30,11 +30,11 @@ namespace ConfigSharp
     public class SyntaxError : Exception
     {
         public SyntaxError(string message, int line) : base(message) => Line = line;
-            public int Line { get; private set; }
-        }
+        public int Line { get; private set; }
+    }
 
 
-        public class Parser
+    public class Parser
     {
         public Parser()
         {
