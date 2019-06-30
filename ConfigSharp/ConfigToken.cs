@@ -3,7 +3,7 @@
     This file is part of ConfigSharp.
 
     Copyright (c) Charles Carley.
-    
+
     Contributor(s): none yet.
 -------------------------------------------------------------------------------
   This software is provided 'as-is', without any express or implied
@@ -27,7 +27,8 @@ namespace ConfigSharp
 {
     public class Token
     {
-        public enum TokenType {
+        public enum TokenType
+        {
 
             TokenIdentifier = 0,
             OpenBracket,
@@ -44,7 +45,7 @@ namespace ConfigSharp
         public TokenType Type { get; set; }
         public string Value { get; set; }
 
-        public Token( TokenType tok, string val )
+        public Token(TokenType tok, string val)
         {
             Type = tok;
             Value = val;

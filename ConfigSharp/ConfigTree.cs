@@ -3,7 +3,7 @@
     This file is part of ConfigSharp.
 
     Copyright (c) Charles Carley.
-    
+
     Contributor(s): none yet.
 -------------------------------------------------------------------------------
   This software is provided 'as-is', without any express or implied
@@ -37,87 +37,95 @@ namespace ConfigSharp
             m_depth     = 0;
         }
 
-        public void AddNode( Node nd )
+        public void AddNode(Node nd)
         {
-            if( nd != null )
-                Nodes.Add( nd );
+            if (nd != null)
+                Nodes.Add(nd);
         }
 
-        public void AddAtribute( Attribute attr )
+        public void AddAtribute(Attribute attr)
         {
-            if( attr != null )
-                Attributes.Add( attr );
+            if (attr != null)
+                Attributes.Add(attr);
         }
 
 
 
-        public Attribute FindAttribute( string name )
+        public Attribute FindAttribute(string name)
         {
-            foreach( Attribute attr in Attributes ) {
-                if( attr.Key == name )
+            foreach (Attribute attr in Attributes)
+            {
+                if (attr.Key == name)
                     return attr;
             }
             return null;
         }
 
-        public Node FindNodeByName( string name )
+        public Node FindNodeByName(string name)
         {
-            foreach( Node nd in Nodes ) {
-                if( nd.Name == name )
+            foreach (Node nd in Nodes)
+            {
+                if (nd.Name == name)
                     return nd;
             }
             return null;
         }
 
 
-        private Node LookupNode( Node root, string name )
+        private Node LookupNode(Node root, string name)
         {
-            if( root == null ) return null;
+            if (root == null) return null;
 
-            foreach( Node nd in root.Children ) {
-                if( nd.Name == name )
+            foreach (Node nd in root.Children)
+            {
+                if (nd.Name == name)
                     return nd;
-                else {
-                    Node rv = LookupNode( nd, name );
-                    if( rv != null )
+                else
+                {
+                    Node rv = LookupNode(nd, name);
+                    if (rv != null)
                         return rv;
                 }
             }
             return null;
         }
 
-        public Node LookupNode( string name )
+        public Node LookupNode(string name)
         {
-            foreach( Node nd in Nodes ) {
-                if( nd.Name == name )
+            foreach (Node nd in Nodes)
+            {
+                if (nd.Name == name)
                     return nd;
             }
 
-            // not found search recursivly
-            foreach( Node nd in Nodes ) {
-                Node rv = LookupNode( nd, name );
-                if( rv != null ) return rv;
+            // not found search recursively
+            foreach (Node nd in Nodes)
+            {
+                Node rv = LookupNode(nd, name);
+                if (rv != null) return rv;
             }
             return null;
         }
 
-        public Node FindNodeByType( string type )
+        public Node FindNodeByType(string type)
         {
-            foreach( Node nd in Nodes ) {
-                if( nd.Type == type )
+            foreach (Node nd in Nodes)
+            {
+                if (nd.Type == type)
                     return nd;
             }
             return null;
         }
 
 
-        public Attribute LookupAttribute( Attribute forAttr, string attr )
+        public Attribute LookupAttribute(Attribute forAttr, string attr)
         {
-            Node l = LookupNode( forAttr.SwizzleL );
-            if( l != null ) {
-                Node r = l.FindNodeByName( forAttr.SwizzleR );
-                if( r != null )
-                    return r.FindAttribute( attr );
+            Node l = LookupNode(forAttr.SwizzleL);
+            if (l != null)
+            {
+                Node r = l.FindNodeByName(forAttr.SwizzleR);
+                if (r != null)
+                    return r.FindAttribute(attr);
             }
             return null;
         }
@@ -133,16 +141,16 @@ namespace ConfigSharp
         private string WriteSpace()
         {
             string str = "";
-            for( int i = 0; i < m_depth; ++i )
+            for (int i = 0; i < m_depth; ++i)
                 str += " ";
             return str;
         }
 
 
-        private string AsPrettyPrint( Node nd )
+        private string AsPrettyPrint(Node nd)
         {
             string result = "";
-            if( nd == null )
+            if (nd == null)
                 return result;
 
             result += WriteSpace();
@@ -152,14 +160,18 @@ namespace ConfigSharp
             result += WriteNewLine();
             m_depth += 4;
 
-            foreach( Attribute attr in nd.Attributes ) {
-                if( attr.Type == Token.TokenType.InlineExtra ) {
+            foreach (Attribute attr in nd.Attributes)
+            {
+                if (attr.Type == Token.TokenType.InlineExtra)
+                {
                     result += WriteSpace();
                     result += attr.Key + "  =>>>";
                     result += attr.Value;
                     result += "<<<=;";
                     result += WriteNewLine();
-                } else if( attr.Type == Token.TokenType.Array ) {
+                }
+                else if (attr.Type == Token.TokenType.Array)
+                {
                     result += WriteSpace();
                     result += attr.Key + " [";
                     result += WriteNewLine();
@@ -168,8 +180,10 @@ namespace ConfigSharp
                     string[] arr = attr.Array;
                     bool first = true;
 
-                    foreach( string s in arr ) {
-                        if( !first ) {
+                    foreach (string s in arr)
+                    {
+                        if (!first)
+                        {
                             result += ',';
                             result += WriteNewLine();
                         }
@@ -182,14 +196,16 @@ namespace ConfigSharp
                     result += WriteSpace();
                     result += "]";
                     result += WriteNewLine();
-                } else {
+                }
+                else
+                {
                     result += WriteSpace();
                     result += attr.Key + "  = \"" + attr.Value + "\";";
                     result += WriteNewLine();
                 }
             }
-            foreach( Node chnd in nd.Children )
-                result += AsPrettyPrint( chnd );
+            foreach (Node chnd in nd.Children)
+                result += AsPrettyPrint(chnd);
             m_depth -= 4;
             result += WriteSpace();
             result += "}" + WriteNewLine();
@@ -203,38 +219,45 @@ namespace ConfigSharp
             result += WriteSpace();
             result += WriteNewLine();
             m_depth = 0;
-            foreach( Node nd in Nodes )
-                result += AsPrettyPrint( nd );
+            foreach (Node nd in Nodes)
+                result += AsPrettyPrint(nd);
             return result;
         }
 
-        private string AsCompactPrint( Node nd )
+        private string AsCompactPrint(Node nd)
         {
             string result = "";
-            if( nd == null )
+            if (nd == null)
                 return result;
+
             result += nd.Type + " " + nd.Name + "{";
-            foreach( Attribute attr in nd.Attributes ) {
-                if( attr.Type == Token.TokenType.InlineExtra ) {
+            foreach (Attribute attr in nd.Attributes)
+            {
+                if (attr.Type == Token.TokenType.InlineExtra)
+                {
                     result += attr.Key + "=>>>";
                     result += attr.Value;
                     result += "<<<=;";
-                } else if( attr.Type == Token.TokenType.Array ) {
+                }
+                else if (attr.Type == Token.TokenType.Array)
+                {
                     result += attr.Key + "[";
                     string[] arr = attr.Array;
                     bool first = true;
-                    foreach( string s in arr ) {
-                        if( !first )
+                    foreach (string s in arr)
+                    {
+                        if (!first)
                             result += ',';
                         result += s;
                         first = false;
                     }
                     result += "]";
-                } else
+                }
+                else
                     result += attr.Key + "=\"" + attr.Value + "\";";
             }
-            foreach( Node chnd in nd.Children )
-                result += AsCompactPrint( chnd );
+            foreach (Node chnd in nd.Children)
+                result += AsCompactPrint(chnd);
             result += "}";
             return result;
         }
@@ -243,23 +266,26 @@ namespace ConfigSharp
         {
             string result = "";
             m_depth = 0;
-            foreach( Node nd in Nodes )
-                result += AsCompactPrint( nd );
+            foreach (Node nd in Nodes)
+                result += AsCompactPrint(nd);
             return result;
         }
 
         public string AsCompactByteArray()
         {
             string result = "", val = AsCompactPrint();
-            if( val.Length > 0 ) {
+            if (val.Length > 0)
+            {
                 int nl = '\n';
                 int cr = '\r';
                 int i = 0;
-                foreach( char c in val ) {
+                foreach (char c in val)
+                {
                     int ci = c;
-                    if( ( ci >= 32 && ci <= 127 ) || ci == nl || ci == cr ) {
+                    if ((ci >= 32 && ci <= 127) || ci == nl || ci == cr)
+                    {
                         result += ci.ToString();
-                        if( i + 1 < val.Length )
+                        if (i + 1 < val.Length)
                             result += ",";
                         ++i;
                     }
@@ -267,7 +293,42 @@ namespace ConfigSharp
             }
             return result;
         }
+        
+        private static int CharHex2Int(char c)
+        {
+            int ival = 0;
+            if (c >= 'A') ival = 10 + ((int)c) - 'A';
+            else if (c >= '0') ival = ((int)c) - '0';
+            return ival;
+        }
+        
+        public string FromHex(string src)
+        {
 
+            if( src == null || src.Length == 0 )
+                return string.Empty;
+
+            int i, len = src.Length, dv,rv, iv;
+            string res = "";
+            
+            for (i=0; i<len; i+=2)
+            {
+                dv = CharHex2Int(src[i]);
+                rv = CharHex2Int(src[i+1]);
+                iv = 16 * dv + rv;
+                res += (char)iv;
+            }
+            return  res;
+        }
+
+        public string AsHex()
+        {
+            string result = "";
+            byte[] bytes = System.Text.Encoding.ASCII.GetBytes(AsCompactPrint());
+            foreach( byte c in bytes)
+                result += c.ToString("X2");
+            return result;
+        }
         public override string ToString() { return AsPrettyPrint(); }
     }
 }

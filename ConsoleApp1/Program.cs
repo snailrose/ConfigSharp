@@ -99,7 +99,7 @@ namespace ConsoleApp1
             Console.WriteLine(val);
 
             Console.WriteLine("========================================");
-            Console.WriteLine("Reparsing");
+            Console.WriteLine("Re-parsing");
             p.Parse(val);
 
             Console.WriteLine("========================================");
@@ -108,7 +108,7 @@ namespace ConsoleApp1
             Console.WriteLine(val);
 
             Console.WriteLine("========================================");
-            Console.WriteLine("Reparsing");
+            Console.WriteLine("Re-parsing");
             p.Parse(val);
 
             Console.WriteLine("========================================");
@@ -121,6 +121,33 @@ namespace ConsoleApp1
             Console.WriteLine("========================================");
             Console.WriteLine("AsPrettyPrint ");
             Console.WriteLine(val);
+
+            
+            
+            val = psr.Tree.AsHex();
+            Console.WriteLine("========================================");
+            Console.WriteLine("AsHex");
+            Console.WriteLine(val);
+
+            Console.WriteLine("========================================");
+            Console.WriteLine("Re-parsing and checking for constancy.");
+            p.Parse(psr.Tree.FromHex(val));
+
+            nd = p.Tree.FindNodeByName("name");
+            if (nd != null)
+            {
+                ConfigSharp.Attribute key1 = nd.FindAttribute("key1");
+                if (key1!=null)
+                    Console.WriteLine("Parsed key1 = " + key1.Value);
+
+                ConfigSharp.Attribute key2 = nd.FindAttribute("key2");
+                if (key2 != null)
+                    Console.WriteLine("Parsed key2 = " + key2.Value);
+
+                ConfigSharp.Attribute key_chunk = nd.FindAttribute("key_chunk");
+                if (key_chunk != null)
+                    Console.WriteLine("Parsed key_chunk = " + key_chunk.Value);
+            }
         }
     }
 }
