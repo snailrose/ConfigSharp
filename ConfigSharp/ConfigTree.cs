@@ -43,6 +43,14 @@ namespace ConfigSharp
                 Nodes.Add(nd);
         }
 
+
+
+        public void AddAtribute(string name, string value)
+        {
+            if (FindAttribute(name) == null)
+                Attributes.Add(new Attribute(name, value));
+        }
+
         public void AddAtribute(Attribute attr)
         {
             if (attr != null)
@@ -145,22 +153,14 @@ namespace ConfigSharp
                 str += " ";
             return str;
         }
-
-
-        private string AsPrettyPrint(Node nd)
+        
+        private string AsPrettyPrint(List<Attribute> attributes)
         {
             string result = "";
-            if (nd == null)
+            if (attributes == null)
                 return result;
 
-            result += WriteSpace();
-            result += nd.Type + " " + nd.Name;
-            result += WriteNewLine();
-            result += WriteSpace() + "{";
-            result += WriteNewLine();
-            m_depth += 4;
-
-            foreach (Attribute attr in nd.Attributes)
+            foreach (Attribute attr in attributes)
             {
                 if (attr.Type == Token.TokenType.InlineExtra)
                 {
@@ -204,6 +204,23 @@ namespace ConfigSharp
                     result += WriteNewLine();
                 }
             }
+            return result;
+        }
+
+
+        private string AsPrettyPrint(Node nd)
+        {
+            string result = "";
+            if (nd == null)
+                return result;
+
+            result += WriteSpace();
+            result += nd.Type + " " + nd.Name;
+            result += WriteNewLine();
+            result += WriteSpace() + "{";
+            result += WriteNewLine();
+            m_depth += 4;
+            result += AsPrettyPrint(nd.Attributes);
             foreach (Node chnd in nd.Children)
                 result += AsPrettyPrint(chnd);
             m_depth -= 4;
@@ -219,19 +236,19 @@ namespace ConfigSharp
             result += WriteSpace();
             result += WriteNewLine();
             m_depth = 0;
+            result += AsPrettyPrint(Attributes);
             foreach (Node nd in Nodes)
                 result += AsPrettyPrint(nd);
             return result;
         }
 
-        private string AsCompactPrint(Node nd)
+        private string AsCompactPrint(List<Attribute> attributes)
         {
             string result = "";
-            if (nd == null)
+            if (attributes == null)
                 return result;
 
-            result += nd.Type + " " + nd.Name + "{";
-            foreach (Attribute attr in nd.Attributes)
+            foreach (Attribute attr in attributes)
             {
                 if (attr.Type == Token.TokenType.InlineExtra)
                 {
@@ -256,6 +273,17 @@ namespace ConfigSharp
                 else
                     result += attr.Key + "=\"" + attr.Value + "\";";
             }
+            return result;
+        }
+
+        private string AsCompactPrint(Node nd)
+        {
+            string result = "";
+            if (nd == null)
+                return result;
+
+            result += nd.Type + " " + nd.Name + "{";
+            result += AsCompactPrint(nd.Attributes);
             foreach (Node chnd in nd.Children)
                 result += AsCompactPrint(chnd);
             result += "}";
@@ -266,6 +294,7 @@ namespace ConfigSharp
         {
             string result = "";
             m_depth = 0;
+            result += AsCompactPrint(Attributes);
             foreach (Node nd in Nodes)
                 result += AsCompactPrint(nd);
             return result;

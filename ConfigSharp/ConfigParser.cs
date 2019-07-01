@@ -38,7 +38,7 @@ namespace ConfigSharp
     {
         public Parser()
         {
-            Tree = null;
+            Tree = new Tree();
         }
 
         static public Parser ParseByteArray(string bytes)
