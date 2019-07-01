@@ -34,7 +34,7 @@ namespace ConfigSharp
             Type = type;
             Parent = null;
             Children = new List<Node>();
-            Attributes = new List<Attribute>();
+            Attributes = new Dictionary<string, Attribute>();
         }
 
         public void AddChild( Node nd )
@@ -48,15 +48,13 @@ namespace ConfigSharp
         public void AddAttribute( Attribute attr )
         {
             if( attr != null )
-                Attributes.Add( attr );
+                Attributes.Add(attr.Key, attr );
         }
 
         public Attribute FindAttribute( string name )
         {
-            foreach( Attribute attr in Attributes ) {
-                if( attr.Key.Equals( name ) )
-                    return attr;
-            }
+            if (Attributes.ContainsKey(name))
+                return Attributes[name];
             return null;
         }
 
@@ -78,21 +76,13 @@ namespace ConfigSharp
             }
             return null;
         }
-
-        public Attribute this[int key] {
-            get
-            {
-                if( key >= 0 && key < Attributes.Count )
-                    return Attributes[key];
-                return null;
-            }
-        }
-
+        
 
         public string           Name        { get; private set; }
         public string           Type        { get; private set; }
         public List<Node>       Children    { get; private set; }
         public Node             Parent      { get; private set; }
-        public List<Attribute>  Attributes  { get; set; }
+
+        public Dictionary<string, Attribute>  Attributes  { get; set; }
     }
 }

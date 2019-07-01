@@ -34,7 +34,7 @@ namespace ConfigSharp
         }
 
         public string Key       { get; private set; }
-        public string Value     { get; private set; }
+        public string Value     { get; set; }
 
         public string[] Array
         {

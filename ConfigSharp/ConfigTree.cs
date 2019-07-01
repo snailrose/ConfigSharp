@@ -33,7 +33,7 @@ namespace ConfigSharp
         public Tree()
         {
             Nodes       = new List<Node>();
-            Attributes  = new List<Attribute>();
+            Attributes  = new Dictionary<string, Attribute>();
             m_depth     = 0;
         }
 
@@ -43,29 +43,27 @@ namespace ConfigSharp
                 Nodes.Add(nd);
         }
 
-
+        public bool HasAtribute(string name)
+        {
+            return FindAttribute(name) != null;
+        }
 
         public void AddAtribute(string name, string value)
         {
             if (FindAttribute(name) == null)
-                Attributes.Add(new Attribute(name, value));
+                Attributes.Add(name, new Attribute(name, value));
         }
 
         public void AddAtribute(Attribute attr)
         {
             if (attr != null)
-                Attributes.Add(attr);
+                Attributes.Add(attr.Key, attr);
         }
-
-
 
         public Attribute FindAttribute(string name)
         {
-            foreach (Attribute attr in Attributes)
-            {
-                if (attr.Key == name)
-                    return attr;
-            }
+            if (Attributes.ContainsKey(name))
+                return Attributes[name];
             return null;
         }
 
@@ -139,7 +137,7 @@ namespace ConfigSharp
         }
 
         public List<Node> Nodes { get; private set; }
-        public List<Attribute> Attributes { get; private set; }
+        public Dictionary<string, Attribute> Attributes { get; private set; }
 
         private string WriteNewLine()
         {
@@ -154,7 +152,7 @@ namespace ConfigSharp
             return str;
         }
         
-        private string AsPrettyPrint(List<Attribute> attributes)
+        private string AsPrettyPrint(Dictionary<string, Attribute>.ValueCollection attributes)
         {
             string result = "";
             if (attributes == null)
@@ -220,7 +218,7 @@ namespace ConfigSharp
             result += WriteSpace() + "{";
             result += WriteNewLine();
             m_depth += 4;
-            result += AsPrettyPrint(nd.Attributes);
+            result += AsPrettyPrint(nd.Attributes.Values);
             foreach (Node chnd in nd.Children)
                 result += AsPrettyPrint(chnd);
             m_depth -= 4;
@@ -236,13 +234,13 @@ namespace ConfigSharp
             result += WriteSpace();
             result += WriteNewLine();
             m_depth = 0;
-            result += AsPrettyPrint(Attributes);
+            result += AsPrettyPrint(Attributes.Values);
             foreach (Node nd in Nodes)
                 result += AsPrettyPrint(nd);
             return result;
         }
 
-        private string AsCompactPrint(List<Attribute> attributes)
+        private string AsCompactPrint(Dictionary<string, Attribute>.ValueCollection attributes)
         {
             string result = "";
             if (attributes == null)
@@ -283,7 +281,7 @@ namespace ConfigSharp
                 return result;
 
             result += nd.Type + " " + nd.Name + "{";
-            result += AsCompactPrint(nd.Attributes);
+            result += AsCompactPrint(nd.Attributes.Values);
             foreach (Node chnd in nd.Children)
                 result += AsCompactPrint(chnd);
             result += "}";
@@ -294,7 +292,7 @@ namespace ConfigSharp
         {
             string result = "";
             m_depth = 0;
-            result += AsCompactPrint(Attributes);
+            result += AsCompactPrint(Attributes.Values);
             foreach (Node nd in Nodes)
                 result += AsCompactPrint(nd);
             return result;
