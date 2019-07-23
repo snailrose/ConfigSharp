@@ -37,7 +37,7 @@ type name {
 </pre>
 
 Nodes are defined as follows
-<pre>
+```
 
 node          ::=  node_decl
 node_decl     ::=  identifier  identifier  '{' decl '}'
@@ -47,5 +47,6 @@ node_decl     ::=  identifier  identifier  '{' decl '}'
 decl          ::=    identifier '=' '"' [any - \n] '"' ';'
                     | identifier '=>>>' [any] '<<<='; 
                     | node_decl
-                    
-</pre>
+
+identifier    ::= CStyleIdentifier
+```
